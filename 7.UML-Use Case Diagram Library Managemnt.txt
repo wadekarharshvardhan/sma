@@ -1,0 +1,79 @@
+UML 1: Library Management System — Use Case Diagram
+
+1. Theory: What Is a Use Case Diagram?
+A Use Case Diagram shows:
+
+Who interacts with the system (Actors)
+What they can do (Use Cases)
+How actors and use cases are related
+
+It represents the functional requirements of a system from a user's perspective.
+
+2. Key Elements
+ElementSymbolMeaningActorStick figureUser/system interacting with systemUse CaseOvalA function/feature of the systemAssociationSolid lineActor uses this use caseIncludeDashed arrow <<include>>One use case always calls anotherExtendDashed arrow <<extend>>Optional use case that may be calledGeneralizationSolid arrowInheritance between actors or use casesSystem BoundaryRectangleDefines what's inside the system
+
+3. Actors in Library Management System
+ActorDescriptionMemberRegistered user who can borrow/return booksLibrarianStaff who manages books and membersSystemAutomated processes (verification, notifications)
+
+4. Use Cases
+Use CaseActorDescriptionLoginMember, LibrarianAuthenticate to systemSearch BookMemberFind books in catalogIssue BookMemberBorrow a bookVerify MemberSystemCheck membership validityCheck Book AvailabilitySystemCheck if book is availableReturn BookMemberReturn borrowed bookCalculate FineSystemFine if overdueManage BooksLibrarianAdd/remove/update booksView Member RecordsLibrarianSee borrowing history
+
+5. Relationships
+
+Issue Book <<include>> Verify Member — Cannot issue without verification
+Issue Book <<include>> Check Book Availability — Must check availability
+Return Book <<extend>> Calculate Fine — Fine calculated only if overdue
+Member uses: Login, Search Book, Issue Book, Return Book
+Librarian uses: Login, Manage Books, View Member Records
+
+
+6. Text Description for Exam Writing
+USE CASE DIAGRAM — Library Management System
+
+ACTORS:
+1. Member — Primary actor; interacts to issue/return books
+2. Librarian — Manages catalog and member accounts
+3. System — Secondary actor; handles verification and fines
+
+USE CASES:
+1. Login
+2. Search Book
+3. Issue Book
+   <<include>> Verify Member
+   <<include>> Check Availability
+4. Return Book
+   <<extend>> Calculate Fine
+5. Manage Books (Librarian only)
+6. View Member Records (Librarian only)
+
+RELATIONSHIPS:
+- Member → Login (association)
+- Member → Search Book (association)
+- Member → Issue Book (association)
+- Issue Book → Verify Member (<<include>>)
+- Issue Book → Check Availability (<<include>>)
+- Member → Return Book (association)
+- Return Book → Calculate Fine (<<extend>>)
+- Librarian → Manage Books (association)
+- Librarian → View Member Records (association)
+
+7. Viva Questions
+Q1: What is an actor?
+
+An entity (person or system) that interacts with the system from outside.
+
+Q2: What is the difference between include and extend?
+
+<<include>> is mandatory — always happens. <<extend>> is optional — happens only under certain conditions.
+
+Q3: Why is "Verify Member" an include of "Issue Book"?
+
+Because verification MUST happen every time a book is issued — it's mandatory.
+
+Q4: Why is "Calculate Fine" an extend of "Return Book"?
+
+Fine is calculated ONLY IF the book is returned late — it's optional/conditional.
+
+Q5: What is a system boundary?
+
+A rectangle that shows what functionality is inside the system vs. outside.

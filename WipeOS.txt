@@ -1,0 +1,9 @@
+lsblk -d -o name,rota | grep -v NAME | while read disk rota; do 
+  if [ "$rota" -eq 0 ]; then 
+    echo "SSD detected: /dev/$disk → using blkdiscard"; 
+    blkdiscard /dev/$disk || dd if=/dev/zero of=/dev/$disk bs=50M status=progress; 
+  else 
+    echo "HDD detected: /dev/$disk → using dd"; 
+    dd if=/dev/zero of=/dev/$disk bs=50M status=progress; 
+  fi 
+done

@@ -1,0 +1,200 @@
+🧪 EXPERIMENT 6: Expert System — Medical/Hospital
+
+1. What Problem Are We Solving?
+Build a system that mimics the knowledge of a medical expert to help diagnose diseases based on symptoms.
+
+2. Why Expert System?
+
+Doctors aren't always available
+Provides preliminary diagnosis for common diseases
+Useful in remote areas with no medical facilities
+
+
+3. Real-World Applications
+
+Medical diagnosis aid (WebMD-like)
+Hospital triage systems
+Agricultural disease detection
+Legal advice systems
+Financial advisors
+
+
+4. Detailed Theory
+Expert System Components:
+
+Knowledge Base — Contains facts and rules (IF-THEN rules)
+Inference Engine — Applies rules to facts to draw conclusions
+User Interface — Collects facts from user
+Working Memory — Stores current problem facts
+
+Forward Chaining (what we use):
+
+Start with known facts (symptoms)
+Apply rules to derive new conclusions (diagnosis)
+
+Example Rule:
+IF fever AND cough AND cold THEN → Flu
+
+5. Step-by-Step Logic
+1. Define diseases and their required symptoms (rules)
+2. Ask user which symptoms they have (collect facts)
+3. For each disease, check if user's symptoms satisfy its rules
+4. If ALL required symptoms match → diagnose that disease
+5. Display diagnosis with recommendations
+
+6. Beginner-Friendly Code with Comments
+python# ============================================================
+# MEDICAL EXPERT SYSTEM — Rule-Based Diagnosis
+# ============================================================
+
+# KNOWLEDGE BASE: Disease → Required symptoms + Treatment
+# This represents the "IF symptoms THEN disease" rules
+knowledge_base = {
+    "Common Cold": {
+        "symptoms": ["runny nose", "sneezing", "sore throat", "mild fever"],
+        "required": 3,  # At least 3 of above symptoms needed
+        "treatment": "Rest, drink fluids, take paracetamol. Consult doctor if worsens.",
+        "severity": "Mild"
+    },
+    "Influenza (Flu)": {
+        "symptoms": ["high fever", "body ache", "fatigue", "cough", "headache"],
+        "required": 3,
+        "treatment": "Antiviral medication, bed rest, fluids. Consult doctor.",
+        "severity": "Moderate"
+    },
+    "COVID-19": {
+        "symptoms": ["fever", "dry cough", "loss of taste", "loss of smell", "fatigue", "breathing difficulty"],
+        "required": 3,
+        "treatment": "Isolate immediately, get tested, consult doctor. Emergency if breathing difficulty.",
+        "severity": "High"
+    },
+    "Malaria": {
+        "symptoms": ["high fever", "chills", "sweating", "headache", "nausea", "muscle pain"],
+        "required": 4,
+        "treatment": "Antimalarial drugs required. See doctor immediately.",
+        "severity": "High"
+    },
+    "Dengue": {
+        "symptoms": ["high fever", "severe headache", "eye pain", "joint pain", "rash", "bleeding"],
+        "required": 3,
+        "treatment": "No specific treatment. Rest, fluids, paracetamol. Avoid aspirin.",
+        "severity": "High"
+    },
+    "Typhoid": {
+        "symptoms": ["sustained fever", "weakness", "stomach pain", "constipation", "headache"],
+        "required": 3,
+        "treatment": "Antibiotics needed. Consult doctor. Avoid solid food initially.",
+        "severity": "Moderate"
+    },
+}
+
+# ============================================================
+# INFERENCE ENGINE — Matches symptoms to diseases
+# ============================================================
+def diagnose(user_symptoms):
+    """
+    user_symptoms: list of symptoms the user has
+    Returns list of matching diagnoses
+    """
+    diagnoses = []
+
+    for disease, data in knowledge_base.items():
+        disease_symptoms = data["symptoms"]
+        required_count = data["required"]
+
+        # Count how many of user's symptoms match this disease
+        matched = []
+        for symptom in disease_symptoms:
+            if symptom in user_symptoms:
+                matched.append(symptom)
+
+        # If enough symptoms match → possible diagnosis
+        if len(matched) >= required_count:
+            diagnoses.append({
+                "disease": disease,
+                "matched_symptoms": matched,
+                "match_count": len(matched),
+                "total_symptoms": len(disease_symptoms),
+                "treatment": data["treatment"],
+                "severity": data["severity"]
+            })
+
+    # Sort by number of matched symptoms (best match first)
+    diagnoses.sort(key=lambda x: x["match_count"], reverse=True)
+    return diagnoses
+
+# ============================================================
+# USER INTERFACE — Collect symptoms and display diagnosis
+# ============================================================
+def run_expert_system():
+    print("=" * 60)
+    print("     MEDICAL EXPERT SYSTEM — PRELIMINARY DIAGNOSIS")
+    print("     ⚠️  This is NOT a replacement for a real doctor")
+    print("=" * 60)
+
+    # Show all possible symptoms user can choose from
+    all_symptoms = set()
+    for data in knowledge_base.values():
+        all_symptoms.update(data["symptoms"])
+
+    print("\nAvailable symptoms:")
+    symptom_list = sorted(list(all_symptoms))
+    for i, symptom in enumerate(symptom_list, 1):
+        print(f"  {i}. {symptom}")
+
+    print("\nEnter your symptoms (comma-separated):")
+    print("Example: fever, cough, headache")
+    user_input = input("> ").strip().lower()
+
+    # Parse user input into list of symptoms
+    user_symptoms = [s.strip() for s in user_input.split(",")]
+
+    print(f"\nSymptoms entered: {', '.join(user_symptoms)}")
+
+    # Run inference engine
+    results = diagnose(user_symptoms)
+
+    # Display results
+    print("\n" + "=" * 60)
+    print("DIAGNOSIS RESULTS:")
+    print("=" * 60)
+
+    if not results:
+        print("No matching condition found based on symptoms.")
+        print("Please consult a doctor for proper diagnosis.")
+    else:
+        for i, result in enumerate(results, 1):
+            print(f"\n{i}. Possible Condition: {result['disease']}")
+            print(f"   Severity: {result['severity']}")
+            print(f"   Matched Symptoms: {', '.join(result['matched_symptoms'])}")
+            print(f"   ({result['match_count']} of {result['total_symptoms']} symptoms match)")
+            print(f"   Recommended Action: {result['treatment']}")
+
+    print("\n⚠️  DISCLAIMER: Always consult a qualified medical professional.")
+
+# ============================================================
+# MAIN
+# ============================================================
+if __name__ == "__main__":
+    run_expert_system()
+
+7. Viva Questions
+Q1: What is an expert system?
+
+A computer program that mimics the decision-making ability of a human expert using a knowledge base and inference engine.
+
+Q2: What are the components of an expert system?
+
+Knowledge base, inference engine, working memory, user interface, explanation facility.
+
+Q3: What is forward chaining?
+
+Starting from known facts (symptoms) and applying rules to reach conclusions (diagnosis).
+
+Q4: What is backward chaining?
+
+Starting from a goal (suspected disease) and working backward to check if facts support it.
+
+Q5: What is a knowledge base?
+
+A structured collection of domain-specific facts and rules used by the expert system.

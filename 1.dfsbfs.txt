@@ -1,0 +1,313 @@
+🧪 EXPERIMENT 1: DFS and BFS on Undirected Graph
+
+1. What Problem Are We Solving?
+We have a graph (a set of nodes connected by edges). We want to visit every node in the graph in a systematic way — without missing any node and without visiting any node twice.
+Think of it like exploring a maze — you need a strategy to make sure you visit every room.
+
+2. Why This Algorithm Is Needed?
+Without a strategy, you might:
+
+Visit the same node again and again (infinite loop)
+Miss some nodes entirely
+
+DFS and BFS are two different strategies to explore all nodes of a graph completely and efficiently.
+
+3. Real-World Applications
+AlgorithmReal-World UseDFSSolving mazes, detecting cycles, topological sorting, finding connected componentsBFSGPS shortest path, social network friend suggestions, web crawlers, level-order tree traversal
+
+4. Detailed Theory (Write This in Exam)
+Graph Basics
+
+A graph is a collection of vertices (nodes) and edges (connections).
+An undirected graph means edges have no direction — if A connects to B, then B also connects to A.
+We use an adjacency list to represent the graph (a dictionary where each node stores its neighbors).
+
+DFS — Depth First Search
+
+DFS explores as deep as possible before backtracking.
+It uses a stack (or recursion, which uses the call stack internally).
+It marks each node visited to avoid revisiting.
+Order: Go deep → backtrack → explore next branch.
+
+BFS — Breadth First Search
+
+BFS explores level by level (all neighbors first, then their neighbors).
+It uses a queue (First In, First Out).
+It also marks nodes visited.
+Order: Visit current → add all neighbors to queue → move to next in queue.
+
+
+5. Step-by-Step Logic
+DFS Logic:
+1. Start at a given node
+2. Mark it as visited
+3. For each neighbor of this node:
+   a. If neighbor is NOT visited → recursively call DFS on it
+4. Repeat until all nodes visited
+BFS Logic:
+1. Start at a given node
+2. Mark it as visited, add to queue
+3. While queue is not empty:
+   a. Remove front node from queue
+   b. Print/process it
+   c. For each neighbor: if not visited → mark visited, add to queue
+4. Repeat until queue is empty
+
+6. Beginner-Friendly Code with Comments
+python# We use 'collections' module for deque (double-ended queue) — used in BFS
+from collections import defaultdict, deque
+
+# ============================================================
+# GRAPH CLASS — stores the graph and has DFS and BFS methods
+# ============================================================
+class Graph:
+    def __init__(self):
+        # defaultdict(list) creates a dictionary where each key automatically
+        # has an empty list as default value
+        # This stores adjacency list: {node: [neighbor1, neighbor2, ...]}
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v):
+        # Since graph is UNDIRECTED, we add edge in BOTH directions
+        self.graph[u].append(v)  # u connects to v
+        self.graph[v].append(u)  # v connects to u (undirected!)
+
+    # ============================================================
+    # DFS — RECURSIVE VERSION
+    # ============================================================
+    def dfs_recursive(self, node, visited):
+        # Mark the current node as visited
+        visited.add(node)
+        print(node, end=" ")  # Print/process the node
+
+        # Loop through all neighbors of current node
+        for neighbor in self.graph[node]:
+            # Only visit neighbor if it hasn't been visited yet
+            if neighbor not in visited:
+                # Recursive call — go deeper into this neighbor
+                self.dfs_recursive(neighbor, visited)
+
+    def dfs(self, start):
+        # Create an empty set to track visited nodes
+        visited = set()
+        print("DFS Traversal:", end=" ")
+        self.dfs_recursive(start, visited)
+        print()  # New line after output
+
+    # ============================================================
+    # BFS — ITERATIVE VERSION USING QUEUE
+    # ============================================================
+    def bfs(self, start):
+        # Set to track visited nodes
+        visited = set()
+
+        # deque is used as a queue (efficient append and popleft)
+        queue = deque()
+
+        # Mark start node as visited and add to queue
+        visited.add(start)
+        queue.append(start)
+
+        print("BFS Traversal:", end=" ")
+
+        # Keep processing until queue is empty
+        while queue:
+            # Remove the front element of the queue (FIFO)
+            node = queue.popleft()
+            print(node, end=" ")  # Process/print the node
+
+            # Look at all neighbors of this node
+            for neighbor in self.graph[node]:
+                # If neighbor not visited, mark it and add to queue
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
+        print()  # New line after output
+
+
+# ============================================================
+# MAIN — Build the graph and test
+# ============================================================
+if __name__ == "__main__":
+    g = Graph()
+
+    # Adding edges to build this graph:
+    #     1
+    #    / \
+    #   2   3
+    #  / \
+    # 4   5
+    g.add_edge(1, 2)
+    g.add_edge(1, 3)
+    g.add_edge(2, 4)
+    g.add_edge(2, 5)
+
+    # Run DFS starting from node 1
+    g.dfs(1)
+
+    # Run BFS starting from node 1
+    g.bfs(1)
+
+7. Line-by-Line Code Explanation
+LineWhat It Doesfrom collections import defaultdict, dequeImports tools: defaultdict for graph storage, deque for BFS queueself.graph = defaultdict(list)Creates adjacency list — each node maps to a list of neighborsself.graph[u].append(v)Adds v as neighbor of uself.graph[v].append(u)Adds u as neighbor of v (undirected)visited = set()Empty set to track which nodes we've seenvisited.add(node)Marks node as visitedfor neighbor in self.graph[node]Loops through all neighborsif neighbor not in visitedChecks if we haven't visited this neighbor yetself.dfs_recursive(neighbor, visited)Recursive call — goes deeperqueue = deque()Creates a queue for BFSqueue.append(start)Adds start node to queuenode = queue.popleft()Removes and returns the front element (FIFO)
+
+8. Important Functions and Their Purpose
+FunctionPurposeadd_edge(u, v)Adds a bidirectional edge between u and vdfs_recursive(node, visited)Recursively visits nodes depth-firstdfs(start)Initializes visited set and starts DFSbfs(start)Iteratively visits nodes breadth-first using a queuedefaultdict(list)Auto-initializes missing keys with empty listsdeque()Efficient queue with O(1) append and popleft
+
+9. Time Complexity
+AlgorithmTime ComplexitySpace ComplexityDFSO(V + E)O(V) — recursion stackBFSO(V + E)O(V) — queue storage
+Where V = number of vertices, E = number of edges.
+Why O(V + E)? — We visit every vertex once (V) and check every edge once (E).
+
+10. Dry Run / Example Execution
+Graph Used:
+    1
+   / \
+  2   3
+ / \
+4   5
+DFS from Node 1:
+Visit 1 → neighbors: [2, 3]
+  Visit 2 → neighbors: [1, 4, 5]
+    1 already visited
+    Visit 4 → neighbors: [2]
+      2 already visited → backtrack
+    Visit 5 → neighbors: [2]
+      2 already visited → backtrack
+  Visit 3 → neighbors: [1]
+    1 already visited → backtrack
+
+DFS Output: 1 2 4 5 3
+BFS from Node 1:
+Queue: [1], Visited: {1}
+→ Process 1, add neighbors 2, 3
+Queue: [2, 3], Visited: {1,2,3}
+→ Process 2, add neighbors 4, 5
+Queue: [3, 4, 5], Visited: {1,2,3,4,5}
+→ Process 3, no new neighbors
+Queue: [4, 5]
+→ Process 4, no new neighbors
+Queue: [5]
+→ Process 5, no new neighbors
+Queue: []
+
+BFS Output: 1 2 3 4 5
+
+11. Viva Questions with Answers
+Q1: What is the difference between DFS and BFS?
+
+DFS goes deep first using a stack/recursion. BFS explores level by level using a queue.
+
+Q2: What data structure does DFS use?
+
+Stack (or recursion which internally uses the call stack).
+
+Q3: What data structure does BFS use?
+
+Queue (FIFO — First In First Out).
+
+Q4: What is the visited set used for?
+
+To avoid visiting the same node twice, which would cause infinite loops.
+
+Q5: What is an adjacency list?
+
+A dictionary where each node maps to a list of its neighbors.
+
+Q6: When would you prefer BFS over DFS?
+
+When finding the shortest path between two nodes in an unweighted graph.
+
+Q7: What is the time complexity of DFS and BFS?
+
+Both are O(V + E).
+
+Q8: Can DFS be implemented without recursion?
+
+Yes, using an explicit stack.
+
+Q9: What happens if we don't use a visited set?
+
+The algorithm may run infinitely, visiting the same nodes again and again.
+
+Q10: What is an undirected graph?
+
+A graph where edges have no direction — if A-B exists, then B-A also exists.
+
+
+12. Possible Examiner Questions
+Internal Examiner:
+
+Trace DFS/BFS on a given graph (they will draw one on the board)
+What is the difference between tree and graph traversal?
+Explain recursion in DFS
+
+External Examiner:
+
+What are the applications of BFS in real life?
+How does BFS find shortest paths?
+Explain with example what happens at each step of BFS
+
+
+13. Common Modifications Examiner May Ask
+Modification 1: "Implement DFS without recursion (using explicit stack)"
+Modification 2: "Find if a path exists between two nodes using BFS"
+Modification 3: "Count number of connected components"
+
+14. Modified Code for Changes
+Mod 1: DFS Without Recursion
+pythondef dfs_iterative(self, start):
+    visited = set()
+    stack = [start]  # Use a list as stack
+    print("DFS Iterative:", end=" ")
+
+    while stack:
+        node = stack.pop()  # Pop from top of stack
+        if node not in visited:
+            visited.add(node)
+            print(node, end=" ")
+            # Push all unvisited neighbors onto stack
+            for neighbor in self.graph[node]:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+    print()
+Mod 2: Path Exists Between Two Nodes (BFS)
+pythondef path_exists(self, start, end):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+
+    while queue:
+        node = queue.popleft()
+        if node == end:  # Found the destination!
+            return True
+        for neighbor in self.graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return False  # Destination not reachable
+Mod 3: Count Connected Components
+pythondef count_components(self):
+    visited = set()
+    count = 0
+
+    # Try starting DFS from every node
+    for node in self.graph:
+        if node not in visited:
+            self.dfs_recursive(node, visited)  # Visits all reachable nodes
+            count += 1  # Each DFS start = one new component
+    return count
+
+15. Common Mistakes Students Make
+MistakeCorrect ApproachForgetting to mark node visited before recursionAlways add to visited BEFORE recursingUsing visited as a list instead of setUse set() — O(1) lookup vs O(n) for listNot adding both directions for undirected graphAlways do graph[u].append(v) AND graph[v].append(u)Using queue.pop() instead of queue.popleft()BFS needs FIFO — use popleft()Forgetting to import dequefrom collections import deque
+
+16. Memory Tricks
+DFS = "Dive Deep, then Swim back"  → Uses STACK (Last In First Out)
+BFS = "Broad Sweep First"          → Uses QUEUE (First In First Out)
+
+DFS → Stack → Recursion → Deep
+BFS → Queue → Iterative → Level
+
+Time complexity both = V + E
+V = Vertices, E = Edges

@@ -1,0 +1,251 @@
+🧪 EXPERIMENT 2: A* Algorithm for Game Search Problem
+
+1. What Problem Are We Solving?
+We need to find the shortest/best path from a start point to a goal point on a grid or map — like finding the best route in a game map or GPS.
+The classic example: Finding path in a grid (like a game board) where some cells are blocked (walls).
+
+2. Why This Algorithm Is Needed?
+Simple BFS finds shortest path but is slow — it explores in all directions equally. A* is smarter — it uses a heuristic (an educated guess) to explore in the most promising direction first, making it much faster.
+
+3. Real-World Applications
+
+GPS Navigation (Google Maps uses A*-like algorithms)
+Video game pathfinding (NPCs finding paths around obstacles)
+Robot motion planning
+Puzzle solving (8-puzzle, 15-puzzle)
+
+
+4. Detailed Theory (Write This in Exam)
+A* uses a cost function:
+f(n) = g(n) + h(n)
+SymbolMeaningf(n)Total estimated cost of path through node ng(n)Actual cost from start to node nh(n)Heuristic — estimated cost from n to goal
+Heuristic used: Manhattan Distance
+h = |current_x - goal_x| + |current_y - goal_y|
+(Used for grids where you can only move up/down/left/right)
+A* always picks the node with the lowest f(n) to explore next, using a priority queue (min-heap).
+
+5. Step-by-Step Logic
+1. Add start node to open list (priority queue) with f=0
+2. While open list is not empty:
+   a. Pick node with lowest f(n) — call it 'current'
+   b. If current == goal → path found! Reconstruct and return
+   c. Move current to closed list (visited)
+   d. For each neighbor of current:
+      - If in closed list → skip
+      - Calculate g, h, f for neighbor
+      - If not in open list → add it
+      - If in open list with higher f → update it
+3. If open list empty and goal not found → no path
+
+6. Beginner-Friendly Code with Comments
+pythonimport heapq  # For priority queue (min-heap)
+
+# ============================================================
+# HEURISTIC FUNCTION — Manhattan Distance
+# ============================================================
+def heuristic(a, b):
+    # Manhattan distance: sum of horizontal + vertical distance
+    # Used because we move only in 4 directions (no diagonal)
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+# ============================================================
+# A* ALGORITHM
+# ============================================================
+def astar(grid, start, goal):
+    """
+    grid: 2D list where 0=open cell, 1=wall/blocked
+    start: (row, col) tuple
+    goal: (row, col) tuple
+    """
+    rows = len(grid)
+    cols = len(grid[0])
+
+    # Priority queue: stores (f_cost, node)
+    # heapq always gives the SMALLEST f_cost first
+    open_list = []
+    heapq.heappush(open_list, (0, start))  # (f=0, start_node)
+
+    # Dictionary to track where each node came from (for path reconstruction)
+    came_from = {}
+
+    # g_cost: actual cost from start to each node
+    # Initialize all to infinity (unknown)
+    g_cost = {start: 0}
+
+    # f_cost: g + h for each node
+    f_cost = {start: heuristic(start, goal)}
+
+    # Set of already fully explored nodes
+    closed_set = set()
+
+    while open_list:
+        # Get node with lowest f_cost
+        current_f, current = heapq.heappop(open_list)
+
+        # GOAL CHECK — if we reached the goal, reconstruct path
+        if current == goal:
+            return reconstruct_path(came_from, current)
+
+        # Add to closed set (we've fully explored this node)
+        closed_set.add(current)
+
+        # Explore all 4 neighbors (up, down, left, right)
+        for direction in [(-1,0), (1,0), (0,-1), (0,1)]:
+            neighbor = (current[0] + direction[0], current[1] + direction[1])
+
+            # Check if neighbor is inside grid boundaries
+            if 0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols:
+
+                # Skip if it's a wall (value = 1)
+                if grid[neighbor[0]][neighbor[1]] == 1:
+                    continue
+
+                # Skip if already fully explored
+                if neighbor in closed_set:
+                    continue
+
+                # Calculate tentative g_cost for this neighbor
+                # Each move costs 1
+                tentative_g = g_cost[current] + 1
+
+                # If this path to neighbor is better than previously known
+                if tentative_g < g_cost.get(neighbor, float('inf')):
+                    # Update path info
+                    came_from[neighbor] = current
+                    g_cost[neighbor] = tentative_g
+                    f_cost[neighbor] = tentative_g + heuristic(neighbor, goal)
+
+                    # Add neighbor to open list for future exploration
+                    heapq.heappush(open_list, (f_cost[neighbor], neighbor))
+
+    # If we exit the loop without finding goal → no path exists
+    return None
+
+# ============================================================
+# RECONSTRUCT PATH — trace back from goal to start
+# ============================================================
+def reconstruct_path(came_from, current):
+    path = [current]  # Start with goal node
+    # Keep going back until we reach start (start won't be in came_from)
+    while current in came_from:
+        current = came_from[current]
+        path.append(current)
+    path.reverse()  # Reverse to get start→goal order
+    return path
+
+# ============================================================
+# MAIN — Test on a sample grid
+# ============================================================
+if __name__ == "__main__":
+    # Grid: 0 = open, 1 = wall
+    # S = start (0,0), G = goal (4,4)
+    grid = [
+        [0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0],
+        [0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0]
+    ]
+
+    start = (0, 0)
+    goal  = (4, 4)
+
+    path = astar(grid, start, goal)
+
+    if path:
+        print("Path found:")
+        for step in path:
+            print(step, end=" → ")
+        print("GOAL")
+    else:
+        print("No path found!")
+
+7. Line-by-Line Code Explanation
+LineExplanationimport heapqImports Python's heap module for priority queueabs(a[0]-b[0]) + abs(a[1]-b[1])Manhattan distance — horizontal + vertical gapheapq.heappush(open_list, (0, start))Adds start with f=0 to priority queuecame_from = {}Records parent of each node for path reconstructiong_cost = {start: 0}Start node has 0 actual costcurrent_f, current = heapq.heappop(open_list)Gets node with lowest f costif current == goalChecks if we reached destinationclosed_set.add(current)Marks node as fully exploredfor direction in [(-1,0),(1,0),(0,-1),(0,1)]Checks 4 neighbors: up, down, left, righttentative_g = g_cost[current] + 1Cost to reach neighbor = current cost + 1 stepg_cost.get(neighbor, float('inf'))Gets known cost or infinity if unknownheapq.heappush(open_list, ...)Adds neighbor to priority queue
+
+8. Important Functions
+FunctionPurposeheuristic(a, b)Calculates Manhattan distance estimateastar(grid, start, goal)Main A* search logicreconstruct_path(came_from, current)Traces path back from goal to startheapq.heappushAdds item to min-heapheapq.heappopRemoves and returns smallest item from heap
+
+9. Time Complexity
+CaseComplexityBest caseO(E) — straight path to goalWorst caseO(V log V) — explores many nodes
+Where V = cells in grid, E = edges (connections between cells).
+
+10. Dry Run
+Grid (0=open, 1=wall):
+[0, 0, 0]
+[0, 1, 0]
+[0, 0, 0]
+
+Start = (0,0), Goal = (2,2)
+
+Step 1: Open = [(0, (0,0))], Process (0,0)
+  h(0,0) = |0-2|+|0-2| = 4
+  Add neighbors: (0,1) and (1,0)
+
+Step 2: Open = [(3,(1,0)), (3,(0,1))]
+  Process (0,1) — f=3
+  Add (0,2)
+
+Step 3: Continue expanding...
+  Eventually reaches (2,2)
+
+Path: (0,0) → (0,1) → (0,2) → (1,2) → (2,2)
+
+11. Viva Questions with Answers
+Q1: What does f(n) = g(n) + h(n) mean?
+
+f = total estimated cost. g = real cost from start. h = estimated cost to goal.
+
+Q2: What heuristic is used and why?
+
+Manhattan distance. Because we move only in 4 directions (no diagonal), so it's accurate and never overestimates.
+
+Q3: What is an admissible heuristic?
+
+One that never overestimates the actual cost. Manhattan distance is admissible.
+
+Q4: What data structure does A use?*
+
+Priority queue (min-heap) — always picks lowest f(n) node.
+
+Q5: What is the difference between A and BFS?*
+
+BFS explores all nodes equally. A* uses heuristic to explore smarter — faster to reach goal.
+
+Q6: What is the closed set?
+
+Nodes that have been fully explored — we don't revisit them.
+
+Q7: When does A fail to find a path?*
+
+When the open list becomes empty and goal hasn't been reached — no path exists.
+
+
+12. Examiner Questions
+
+Trace A* on a given grid step by step
+What if we use Euclidean distance instead of Manhattan?
+What happens if h(n) = 0 always? (Answer: becomes Dijkstra's algorithm)
+What happens if h(n) overestimates? (Answer: may not find optimal path)
+
+
+13. Common Modifications
+Mod 1: Allow diagonal movement
+python# Change directions to include 8 directions
+for direction in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
+Mod 2: Use Euclidean distance heuristic
+pythonimport math
+def heuristic(a, b):
+    return math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)
+
+14. Common Mistakes
+MistakeFixNot checking grid boundariesAlways check 0 <= row < rows and 0 <= col < colsNot skipping wallsCheck grid[r][c] == 1 → continueNot using min-heapUse heapq, not a regular listForgetting to reverse pathpath.reverse() at end of reconstruct
+
+15. Memory Tricks
+A* = "Actual + Assumed"
+f = g + h
+g = "Gone so far" (actual cost)
+h = "Hope to reach" (heuristic estimate)
+
+A* uses MIN-HEAP → always pick cheapest path first
+Manhattan = |x1-x2| + |y1-y2| → "City Block Distance"

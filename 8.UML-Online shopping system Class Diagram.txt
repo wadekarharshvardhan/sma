@@ -1,0 +1,182 @@
+UML 2: Online Shopping System — Class Diagram
+
+1. Theory: What Is a Class Diagram?
+A Class Diagram shows:
+
+Classes (blueprints for objects)
+Attributes (data/properties)
+Methods (operations/functions)
+Relationships between classes
+
+It represents the static structure of the system.
+
+2. Key Relationships
+RelationshipSymbolMeaningAssociationSolid lineClasses are relatedAggregationHollow diamond"Has-a" (weak ownership)CompositionFilled diamond"Part-of" (strong ownership)InheritanceHollow arrow"Is-a" relationshipDependencyDashed arrowOne class uses anotherInterfaceDashed arrow with <<implements>>Class implements interface
+
+3. Classes, Attributes, Methods
+CLASS: Customer
+Attributes:
+  - customerId: int
+  - name: String
+  - email: String
+  - address: String
+  - phone: String
+Methods:
+  + login(): void
+  + logout(): void
+  + updateProfile(): void
+  + viewOrderHistory(): List<Order>
+
+CLASS: Product
+Attributes:
+  - productId: int
+  - name: String
+  - description: String
+  - price: double
+  - stockQuantity: int
+  - category: String
+Methods:
+  + getDetails(): String
+  + checkAvailability(): boolean
+  + updateStock(quantity: int): void
+
+CLASS: Cart
+Attributes:
+  - cartId: int
+  - items: List<CartItem>
+  - totalAmount: double
+Methods:
+  + addItem(product: Product, qty: int): void
+  + removeItem(product: Product): void
+  + calculateTotal(): double
+  + clearCart(): void
+
+CLASS: Order
+Attributes:
+  - orderId: int
+  - customer: Customer
+  - items: List<Product>
+  - totalAmount: double
+  - status: String
+  - orderDate: Date
+Methods:
+  + placeOrder(): void
+  + cancelOrder(): void
+  + getStatus(): String
+  + generateInvoice(): Invoice
+
+CLASS: Payment
+Attributes:
+  - paymentId: int
+  - amount: double
+  - method: String
+  - status: String
+  - transactionDate: Date
+Methods:
+  + processPayment(): boolean
+  + refund(): void
+  + getReceipt(): String
+
+INTERFACE: Payable
+  + processPayment(): boolean
+  + refund(): void
+
+CLASS: CreditCardPayment implements Payable
+CLASS: UPIPayment implements Payable
+CLASS: CODPayment implements Payable
+
+CLASS: Seller
+Attributes:
+  - sellerId: int
+  - name: String
+  - rating: double
+Methods:
+  + addProduct(): void
+  + removeProduct(): void
+  + viewSales(): void
+
+4. Relationships in Online Shopping
+Customer ——————— Order          (Association: 1 customer has many orders, 1..*)
+Order ◆————————— Product        (Composition: order contains products)
+Customer ◇———————Cart           (Aggregation: customer has a cart)
+Cart ——————————— Product        (Association: cart contains products)
+Order ——————————— Payment       (Association: order has a payment)
+Payment <|——————— CreditCard    (Inheritance/Generalization)
+Payment <|——————— UPI           (Inheritance/Generalization)
+Payable <|....... Payment       (Interface implementation)
+Seller ——————————Product        (Association: seller lists products)
+
+5. Viva Questions
+Q1: What is the difference between aggregation and composition?
+
+Aggregation: weak relationship — part can exist independently (Cart and Product). Composition: strong — part cannot exist without whole (Order and OrderItem, if order deleted, items deleted too).
+
+Q2: What is an interface in class diagram?
+
+A contract that classes must implement. Shown with <<interface>> stereotype.
+
+Q3: What is multiplicity?
+
+Numbers on relationship lines showing how many objects relate. E.g., 1..* means one to many.
+
+Q4: What is the difference between association and dependency?
+
+Association is a structural relationship (permanent). Dependency is temporary (one class uses another briefly).
+
+
+UML 3: Online Shopping — Sequence Diagram
+
+1. Theory: What Is a Sequence Diagram?
+A Sequence Diagram shows how objects interact in time order — the sequence of messages passed between them to complete a use case.
+
+2. Key Elements
+ElementSymbolMeaningActor/ObjectBox at topParticipant in interactionLifelineDashed vertical lineObject's existence over timeActivation barThin rectangle on lifelineObject is active/processingMessageSolid arrow →Call/message sentReturn messageDashed arrow ←Response returnedSelf-messageArrow to selfObject calls its own method
+
+3. Sequence: Placing an Order in Online Shopping
+Actors/Objects: Customer, Browser/UI, Cart, OrderService, PaymentService, Database
+
+SEQUENCE:
+
+Customer → UI: browseProducts()
+UI → Database: fetchProducts()
+Database → UI: productList
+UI → Customer: displayProducts()
+
+Customer → UI: addToCart(product)
+UI → Cart: addItem(product, qty)
+Cart → Cart: calculateTotal()
+Cart → UI: cartUpdated
+UI → Customer: showCart()
+
+Customer → UI: placeOrder()
+UI → OrderService: createOrder(customer, cart)
+OrderService → Database: saveOrder(order)
+Database → OrderService: orderId
+OrderService → UI: orderCreated(orderId)
+
+Customer → UI: makePayment(paymentDetails)
+UI → PaymentService: processPayment(amount, method)
+PaymentService → PaymentService: validateCard()
+PaymentService → Database: saveTransaction()
+Database → PaymentService: transactionId
+PaymentService → UI: paymentSuccess
+UI → Customer: showOrderConfirmation()
+
+OrderService → Customer: sendConfirmationEmail()
+
+4. Viva Questions
+Q1: What does a sequence diagram show?
+
+The order of messages/interactions between objects over time for a specific scenario.
+
+Q2: What is a lifeline?
+
+A dashed vertical line below an object showing its existence throughout the interaction.
+
+Q3: What is an activation bar?
+
+A thin rectangle on a lifeline showing when an object is actively processing.
+
+Q4: What is the difference between sequence and collaboration diagram?
+
+Sequence shows time order of messages. Collaboration shows structural relationships and messages together.

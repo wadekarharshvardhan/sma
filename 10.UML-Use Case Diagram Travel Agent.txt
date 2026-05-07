@@ -1,0 +1,94 @@
+UML 4: Travel Agent System — Use Case Diagram
+
+1. Actors
+ActorDescriptionCustomerPrimary actor — books flights, hotels, paysTravel AgentStaff who assists customersBank/Payment GatewayExternal system for paymentsAirline SystemExternal system for flight bookingsHotel SystemExternal system for hotel bookings
+
+2. Use Cases
+Use CaseActorTypeBook Flight TicketCustomerPrimaryCancel Flight TicketCustomerPrimaryBook HotelCustomerPrimaryCancel Hotel BookingCustomerPrimaryMake PaymentCustomerPrimaryPay by CashCustomerExtension of Make PaymentPay by CardCustomerExtension of Make PaymentReceive RefundCustomerExtension of CancellationVerify CustomerSystemInclude in Book operationsCheck Seat AvailabilityAirline SystemInclude in Book FlightCheck Room AvailabilityHotel SystemInclude in Book HotelGenerate TicketSystemInclude in successful booking
+
+3. Relationships
+Book Flight Ticket <<include>> Verify Customer
+Book Flight Ticket <<include>> Check Seat Availability
+Book Flight Ticket <<include>> Make Payment
+Book Hotel <<include>> Verify Customer
+Book Hotel <<include>> Check Room Availability
+Book Hotel <<include>> Make Payment
+
+Make Payment <<extend>> Pay by Cash
+Make Payment <<extend>> Pay by Card
+
+Cancel Flight Ticket <<extend>> Receive Refund
+Cancel Hotel Booking <<extend>> Receive Refund
+
+Customer ——> Book Flight Ticket
+Customer ——> Cancel Flight Ticket
+Customer ——> Book Hotel
+Customer ——> Cancel Hotel Booking
+
+Generalization:
+Pay by Cash ——|> Make Payment
+Pay by Card ——|> Make Payment
+
+4. Detailed Relationship Explanations
+Include (<<include>>):
+
+Mandatory — the included use case ALWAYS executes
+Example: "Book Flight" ALWAYS includes "Verify Customer" — you can't book without verification
+
+Extend (<<extend>>):
+
+Optional/Conditional — only happens under certain conditions
+Example: "Cancel Ticket" EXTENDS with "Receive Refund" — refund only happens if cancellation conditions are met
+
+Generalization (Inheritance):
+
+"Is-a" relationship between actors or use cases
+Example: "Pay by Cash" and "Pay by Card" are both types of "Make Payment"
+They inherit the base behavior but add specific behavior
+
+
+5. Viva Questions
+Q1: What actors are in the Travel Agent System?
+
+Customer, Travel Agent, Bank/Payment Gateway, Airline System, Hotel System.
+
+Q2: Why is "Make Payment" included in "Book Flight"?
+
+Because payment is mandatory for every flight booking — no booking without payment.
+
+Q3: Why is "Receive Refund" an extend of "Cancel Ticket"?
+
+Because refund is conditional — only given if the ticket qualifies for refund per policy.
+
+Q4: What is generalization in use case diagrams?
+
+When one actor or use case inherits from another. "Pay by Cash" and "Pay by Card" are generalizations of "Make Payment."
+
+Q5: What is the difference between a primary and secondary actor?
+
+Primary actor initiates the use case (Customer). Secondary actor is involved but doesn't initiate (Bank System).
+
+
+🎯 FINAL MEMORY GUIDE — Quick Revision
+ALGORITHMS:
+DFS = Stack/Recursion = Deep first
+BFS = Queue = Level by level
+A* = f(n) = g(n) + h(n), min-heap, Manhattan distance
+Prim's = Greedy MST, grow from seed node, min-heap
+Backtracking = Try→Fail→Undo→Retry
+
+UML DIAGRAMS:
+Use Case = WHO does WHAT (actors + ovals)
+Class Diagram = Classes + attributes + methods + relationships
+Sequence Diagram = Message flow in time order
+
+RELATIONSHIPS:
+Include = Mandatory
+Extend = Optional/Conditional
+Generalization = Inheritance
+Association = Simple link
+Aggregation = Weak "has-a" (hollow diamond)
+Composition = Strong "part-of" (filled diamond)
+
+EXPERT SYSTEM = Knowledge Base + Inference Engine
+CHATBOT = Patterns + Responses + re.search()

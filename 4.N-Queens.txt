@@ -1,0 +1,219 @@
+🧪 EXPERIMENT 4: Constraint Satisfaction — N-Queens with Backtracking
+
+1. What Problem Are We Solving?
+Place N queens on an N×N chessboard such that no two queens attack each other.
+Queens attack in: same row, same column, same diagonal.
+
+2. Why Backtracking?
+We try placing queens one by one. If a placement leads to a conflict → we backtrack (undo) and try a different position. This avoids exploring impossible paths.
+
+3. Real-World Applications
+
+Scheduling problems (assign tasks without conflicts)
+Map coloring
+Sudoku solving
+Circuit design
+Timetable creation
+
+
+4. Detailed Theory
+Constraint Satisfaction Problem (CSP):
+
+Variables: Position of each queen (one per row)
+Domain: Column positions (0 to N-1)
+Constraints: No two queens in same column or diagonal
+
+Backtracking:
+
+A systematic trial and error method
+Try a value → check constraints → if valid continue → if invalid try next value
+If no value works → go back to previous variable
+
+Branch and Bound:
+
+Extension of backtracking
+Prunes branches that cannot possibly lead to a solution
+Uses a bound to decide early if a path is hopeless
+
+
+5. Step-by-Step Logic
+1. Start from row 0
+2. Try placing queen in each column of current row
+3. Check if placement is safe (no conflict with previously placed queens)
+4. If safe → place queen → move to next row
+5. If not safe → try next column
+6. If all columns tried and none safe → backtrack to previous row
+7. If all N queens placed → solution found!
+
+6. Beginner-Friendly Code with Comments
+python# ============================================================
+# N-QUEENS PROBLEM — BACKTRACKING SOLUTION
+# ============================================================
+
+def is_safe(board, row, col, n):
+    """
+    Check if placing a queen at (row, col) is safe.
+    We only check previously placed queens (rows 0 to row-1).
+    """
+
+    # Check same column — scan all rows above
+    for i in range(row):
+        if board[i] == col:  # Another queen in same column
+            return False
+
+    # Check upper-left diagonal
+    # Move diagonally up-left: row decreases, col decreases
+    i, j = row - 1, col - 1
+    while i >= 0 and j >= 0:
+        if board[i] == j:  # Queen found on this diagonal
+            return False
+        i -= 1
+        j -= 1
+
+    # Check upper-right diagonal
+    # Move diagonally up-right: row decreases, col increases
+    i, j = row - 1, col + 1
+    while i >= 0 and j < n:
+        if board[i] == j:  # Queen found on this diagonal
+            return False
+        i -= 1
+        j += 1
+
+    return True  # Safe to place queen here
+
+
+def solve_nqueens(board, row, n, solutions):
+    """
+    Recursively place queens row by row.
+    board[i] = column where queen is placed in row i
+    """
+
+    # BASE CASE: All N queens placed successfully
+    if row == n:
+        solutions.append(board[:])  # Save a copy of this solution
+        return
+
+    # Try placing queen in each column of current row
+    for col in range(n):
+        if is_safe(board, row, col, n):
+            board[row] = col          # Place queen at (row, col)
+            solve_nqueens(board, row + 1, n, solutions)  # Recurse to next row
+            board[row] = -1           # BACKTRACK: Remove queen (try next column)
+
+
+def print_board(board, n):
+    """Print the chessboard with Q for queen and . for empty"""
+    for row in range(n):
+        line = ""
+        for col in range(n):
+            if board[row] == col:
+                line += "Q "  # Queen
+            else:
+                line += ". "  # Empty
+        print(line)
+    print()
+
+
+# ============================================================
+# MAIN
+# ============================================================
+if __name__ == "__main__":
+    n = 4  # 4-Queens problem (try 8 for full chess problem)
+
+    board = [-1] * n   # board[i] = column of queen in row i, -1 = no queen
+    solutions = []     # Store all valid solutions
+
+    solve_nqueens(board, 0, n, solutions)
+
+    print(f"Total solutions for {n}-Queens: {len(solutions)}\n")
+
+    for i, sol in enumerate(solutions):
+        print(f"Solution {i+1}:")
+        print_board(sol, n)
+
+7. Line-by-Line Explanation
+LineExplanationboard = [-1] * nArray where index=row, value=column of queen; -1 means no queenfor i in range(row): if board[i] == colCheck if any previous queen is in same columni, j = row-1, col-1Start moving up-left diagonallywhile i >= 0 and j >= 0Stay within board while checking diagonalif board[i] == jCheck if queen exists on that diagonal cellboard[row] = colPlace queen in this columnsolve_nqueens(board, row+1, ...)Recursive call for next rowboard[row] = -1Backtrack — remove queen, try next columnif row == nAll queens placed — solution found!
+
+8. Time Complexity
+CaseComplexityWorst CaseO(N!) — factorialWith pruningMuch better in practice
+
+9. Dry Run (4-Queens)
+Board = 4x4
+
+Row 0: Try col 0 → Safe → Place Q at (0,0)
+Row 1: Try col 0 → Unsafe (same col) → Try col 1 → Unsafe (diagonal) → Try col 2 → Safe → Place Q at (1,2)
+Row 2: Try col 0 → Unsafe → Try col 1 → Unsafe → Try col 2 → Unsafe → Try col 3 → Unsafe
+  → BACKTRACK to row 1
+Row 1: Try col 3 → Safe → Place Q at (1,3)
+Row 2: Try col 0 → Unsafe → Try col 1 → Safe → Place Q at (2,1)
+Row 3: Try col 0 → Unsafe → Try col 1 → Unsafe → Try col 2 → Unsafe → Try col 3 → Unsafe
+  → BACKTRACK to row 2
+... continue until solution found
+
+Solution 1: Q at columns [1,3,0,2]
+. Q . .
+. . . Q
+Q . . .
+. . Q .
+
+10. Viva Questions
+Q1: What is backtracking?
+
+A technique that tries placing values, and if constraints are violated, undoes (backtracks) and tries next option.
+
+Q2: What are the constraints in N-Queens?
+
+No two queens can share the same row, column, or diagonal.
+
+Q3: Why don't we check rows?
+
+We place exactly one queen per row by design — row conflicts can't happen.
+
+Q4: How many solutions exist for 8-Queens?
+
+92 solutions.
+
+Q5: What is the difference between backtracking and brute force?
+
+Backtracking prunes invalid branches early; brute force tries all possibilities regardless.
+
+Q6: What is a CSP?
+
+Constraint Satisfaction Problem — find values for variables satisfying all constraints.
+
+Q7: What is Branch and Bound?
+
+An extension of backtracking that uses a cost bound to prune branches that cannot improve the current best solution.
+
+
+11. Common Modifications
+Mod: Graph Coloring with Backtracking
+pythondef graph_coloring(graph, colors, node, num_colors, color_map):
+    if node == len(graph):
+        return True  # All nodes colored
+
+    for color in range(1, num_colors + 1):
+        if is_color_safe(graph, color_map, node, color):
+            color_map[node] = color
+            if graph_coloring(graph, colors, node + 1, num_colors, color_map):
+                return True
+            color_map[node] = 0  # Backtrack
+
+    return False
+
+def is_color_safe(graph, color_map, node, color):
+    for neighbor in graph[node]:
+        if color_map[neighbor] == color:
+            return False
+    return True
+
+12. Memory Tricks
+Backtracking = "Try, Fail, Go Back, Try Again"
+Like solving a maze: hit a dead end → step back → try new path
+
+N-Queens checks:
+1. Same column: board[i] == col
+2. Left diagonal: board[i] == col - (row - i)
+3. Right diagonal: board[i] == col + (row - i)
+
+Or simply: check col, check both diagonals using while loops

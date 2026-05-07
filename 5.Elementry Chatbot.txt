@@ -1,0 +1,202 @@
+🧪 EXPERIMENT 5: Elementary Chatbot for Customer Interaction
+
+1. What Problem Are We Solving?
+Build a simple rule-based chatbot that can answer common customer questions without human intervention — available 24/7.
+
+2. Why This Is Needed?
+
+Businesses get thousands of repetitive questions daily
+Human agents are expensive and have limited hours
+Chatbots handle FAQs instantly, freeing humans for complex tasks
+
+
+3. Real-World Applications
+
+Customer support (Amazon, Flipkart)
+Bank helpdesk
+Restaurant ordering
+Hospital appointment booking
+Airline check-in
+
+
+4. Detailed Theory
+Types of Chatbots:
+
+Rule-based — Uses if-else or keyword matching (what we implement)
+AI-based — Uses NLP/ML (like ChatGPT)
+
+Our approach:
+
+Match user input to predefined patterns
+Return predefined responses
+Use Python's re module for pattern matching
+
+
+5. Step-by-Step Logic
+1. Define list of (pattern, response) pairs
+2. Get user input
+3. Convert to lowercase
+4. Match against each pattern
+5. Return matching response
+6. If no match → return default "I don't understand" message
+7. Keep looping until user says "bye"
+
+6. Beginner-Friendly Code with Comments
+pythonimport re  # Regular expressions for pattern matching
+import random  # To pick random responses (variety!)
+
+# ============================================================
+# KNOWLEDGE BASE — patterns and their responses
+# Each entry: (pattern_to_match, [list of possible responses])
+# ============================================================
+knowledge_base = [
+    # Greeting patterns
+    (r'\b(hi|hello|hey|howdy)\b',
+     ["Hello! How can I help you today?",
+      "Hi there! What can I do for you?",
+      "Hey! Welcome to our support. How may I assist?"]),
+
+    # How are you
+    (r'how are you',
+     ["I'm doing great, thank you for asking! How can I help?",
+      "All systems running smoothly! What do you need?"]),
+
+    # Product inquiry
+    (r'(product|item|what do you sell|catalog)',
+     ["We sell electronics, clothing, and home appliances. What are you looking for?",
+      "Our catalog includes electronics, fashion, and home goods!"]),
+
+    # Price inquiry
+    (r'(price|cost|how much|rate)',
+     ["Prices vary by product. Please visit our website or tell me the specific item.",
+      "Could you specify which product you'd like the price for?"]),
+
+    # Order status
+    (r'(order|track|status|where is my)',
+     ["Please provide your order ID and I'll help track it!",
+      "You can track your order at our website with your order ID."]),
+
+    # Return/Refund
+    (r'(return|refund|exchange|send back)',
+     ["We have a 30-day return policy. Want me to initiate a return request?",
+      "Returns are easy! Just provide your order ID and reason."]),
+
+    # Delivery
+    (r'(delivery|shipping|dispatch|when will)',
+     ["Standard delivery takes 3-5 business days. Express is 1-2 days.",
+      "We ship Monday to Saturday. Delivery time depends on your location."]),
+
+    # Contact
+    (r'(contact|speak to human|agent|support number)',
+     ["You can reach us at support@example.com or call 1800-XXX-XXXX",
+      "Our support team is available Mon-Sat 9am-6pm. Email: support@example.com"]),
+
+    # Thank you
+    (r'(thank|thanks|thank you)',
+     ["You're welcome! Is there anything else I can help with?",
+      "Happy to help! Let me know if you need anything else."]),
+
+    # Goodbye
+    (r'\b(bye|goodbye|exit|quit|see you)\b',
+     ["Goodbye! Have a great day!",
+      "Thanks for contacting us. Bye!",
+      "See you next time! Take care."]),
+]
+
+# Default response when nothing matches
+DEFAULT_RESPONSES = [
+    "I'm sorry, I didn't quite understand that. Could you rephrase?",
+    "Hmm, I'm not sure about that. Can you be more specific?",
+    "That's outside my current knowledge. Please contact our support team.",
+]
+
+# ============================================================
+# CHATBOT FUNCTION — match input and return response
+# ============================================================
+def get_response(user_input):
+    # Convert to lowercase for case-insensitive matching
+    user_input = user_input.lower().strip()
+
+    # Try each pattern in knowledge base
+    for pattern, responses in knowledge_base:
+        # re.search finds pattern anywhere in the string
+        if re.search(pattern, user_input):
+            # Return a random response from the list (adds variety)
+            return random.choice(responses)
+
+    # Nothing matched — return default
+    return random.choice(DEFAULT_RESPONSES)
+
+# ============================================================
+# MAIN CHAT LOOP
+# ============================================================
+def run_chatbot():
+    print("=" * 50)
+    print("   CUSTOMER SUPPORT CHATBOT")
+    print("   Type 'bye' to exit")
+    print("=" * 50)
+    print("Bot: Hello! I'm your customer support assistant. How can I help?\n")
+
+    while True:
+        # Get user input
+        user_input = input("You: ").strip()
+
+        # Skip empty input
+        if not user_input:
+            print("Bot: Please type something!\n")
+            continue
+
+        # Get chatbot response
+        response = get_response(user_input)
+        print(f"Bot: {response}\n")
+
+        # Check for exit
+        if re.search(r'\b(bye|goodbye|exit|quit)\b', user_input.lower()):
+            break
+
+# ============================================================
+# RUN THE CHATBOT
+# ============================================================
+if __name__ == "__main__":
+    run_chatbot()
+
+7. Line-by-Line Explanation
+LineExplanationimport reRegular expressions for pattern matchingimport randomTo pick random response from listknowledge_baseList of (pattern, responses) tuples`r'\b(hihello)\b'`re.search(pattern, user_input)Searches for pattern anywhere in input stringrandom.choice(responses)Picks one response randomly from listuser_input.lower().strip()Converts to lowercase and removes spaceswhile TrueInfinite loop — keep chatting until exit
+
+8. Important Functions
+FunctionPurposere.search(pattern, string)Returns match object if pattern found, else Nonerandom.choice(list)Returns random element from liststr.lower()Converts to lowercasestr.strip()Removes leading/trailing spacesget_response(user_input)Core function — finds and returns appropriate response
+
+9. Viva Questions
+Q1: What is a rule-based chatbot?
+
+One that uses predefined rules/patterns to match input and return fixed responses.
+
+Q2: What module is used for pattern matching?
+
+re module (Regular Expressions).
+
+Q3: What does re.search() do?
+
+Searches for a pattern anywhere in the string. Returns match or None.
+
+Q4: What is \b in regex?
+
+Word boundary — ensures we match whole words (e.g., "hi" not "this").
+
+Q5: How to add more topics to the chatbot?
+
+Add more (pattern, responses) tuples to the knowledge_base list.
+
+Q6: What is the difference between rule-based and AI chatbot?
+
+Rule-based uses fixed patterns; AI chatbot uses machine learning/NLP to understand natural language.
+
+
+10. Common Modifications
+Mod: Add name recognition
+python(r'my name is (\w+)',
+ ["Nice to meet you, {0}! How can I help?"]),
+To use captured group:
+pythonmatch = re.search(pattern, user_input)
+if match:
+    response = responses[0].format(*match.groups())

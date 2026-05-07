@@ -1,0 +1,9 @@
+dmesg
+sudo dmesg --clear
+sudo rm -rf /var/log/kern*
+sudo rm -rf /var/log/syslog*
+misc
+sudo gedit /var/log/syslog
+sudo nano /var/log/kern.log
+sudo dmesg -C
+sudo dmesg -c
